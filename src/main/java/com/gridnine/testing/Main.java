@@ -1,31 +1,41 @@
 package com.gridnine.testing;
 
-import com.gridnine.testing.service.AcceptableGroundTimeFilter;
+import java.time.LocalDateTime;
 import com.gridnine.testing.service.FlightBuilder;
 import com.gridnine.testing.service.FlightFilterService;
-import com.gridnine.testing.service.FutureDepartureFilter;
-import com.gridnine.testing.service.ValidChronologyFilter;
+import com.gridnine.testing.service.strategy.AcceptableGroundTimeStrategy;
+import com.gridnine.testing.service.strategy.ExcludePastDepartureStrategy;
+import com.gridnine.testing.service.strategy.ValidChronologyStrategy;
 
 public class Main {
 
     public static void main(String[] args) {
         var flights = FlightBuilder.createFlights();
 
-        System.out.println("Excluded all flights before now");
-        FlightFilterService futureDepartureFilter = new FutureDepartureFilter();
-        var filteredFlights = futureDepartureFilter.apply(flights);
-        filteredFlights.forEach(System.out::println);
+        var now = LocalDateTime.now();
+        System.out.println("Excluded flights with departure in the past");
+        var futureDepartureFilter = new FlightFilterService(new ExcludePastDepartureStrategy(now));
+        var flightsWithDepartureInFuture = futureDepartureFilter.filter(flights);
+        flightsWithDepartureInFuture.forEach(System.out::println);
 
         System.out.println("Excluded all flights with invalid chronology");
-        FlightFilterService validChronologyFilter = new ValidChronologyFilter();
-        var filteredFlights2 = validChronologyFilter.apply(flights);
-        filteredFlights2.forEach(System.out::println);
+        var validChronologyFilter = new FlightFilterService(new ValidChronologyStrategy());
+        var flightsWithValidChronology = validChronologyFilter.filter(flights);
+        flightsWithValidChronology.forEach(System.out::println);
         
         System.out.println("Excluded flights with a total ground time exceeding two hours");
-        FlightFilterService acceptableGroundTimeFilter = new AcceptableGroundTimeFilter(120);
-        var filteredFlights3 = acceptableGroundTimeFilter.apply(flights);
-        filteredFlights3.forEach(System.out::println);
+        var limitGroundTime = 120L;
+        var acceptableGroundTimeFilter = new FlightFilterService(new AcceptableGroundTimeStrategy(limitGroundTime));
+        var flightsWithLimitedGroundTime = acceptableGroundTimeFilter.filter(flights);
+        flightsWithLimitedGroundTime.forEach(System.out::println);
         
+        System.out.println("Excluded flights by some rules");
+        var comprehensiveFilter = new FlightFilterService(
+                new ExcludePastDepartureStrategy(now),
+                new ValidChronologyStrategy(),
+                new AcceptableGroundTimeStrategy(limitGroundTime));
+        var fullyFilteredFlights = comprehensiveFilter.filter(flights);
+        fullyFilteredFlights.forEach(System.out::println);
     }
 
 }

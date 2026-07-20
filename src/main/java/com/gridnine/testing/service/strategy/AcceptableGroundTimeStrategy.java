@@ -1,4 +1,4 @@
-package com.gridnine.testing.service;
+package com.gridnine.testing.service.strategy;
 
 import java.time.Duration;
 import java.util.List;
@@ -6,17 +6,19 @@ import java.util.stream.IntStream;
 import com.gridnine.testing.model.Flight;
 import com.gridnine.testing.model.Segment;
 
-public class AcceptableGroundTimeFilter implements FlightFilterService {
+public class AcceptableGroundTimeStrategy implements FlightFilterStrategy {
 
     private final long acceptableGroundTime;
 
-    public AcceptableGroundTimeFilter(long acceptableGroundTime) {
+    public AcceptableGroundTimeStrategy(long acceptableGroundTime) {
         this.acceptableGroundTime = acceptableGroundTime;
     }
 
     @Override
     public List<Flight> apply(List<Flight> flights) {
-        return flights.stream().filter(flight -> countDuration(flight.getSegments()) <= acceptableGroundTime).toList();
+        return flights.stream()
+                .filter(flight -> countDuration(flight.getSegments()) <= acceptableGroundTime)
+               .toList();
     }
 
     private long countDuration(List<Segment> segments) {
