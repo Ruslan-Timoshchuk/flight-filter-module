@@ -13,8 +13,8 @@ public class Main {
     public static void main(String[] args) {
         FlightBuilder flightBuilder = new FlightBuilder();
         var normalFlights = flightBuilder.createNormalFlightsBeforeAllFilters();
-        var ivalidFlights = flightBuilder.createInvalidFlightsBeforeAllFilters();
-        var allFlights = flightBuilder.createAllFlights(List.of(normalFlights, ivalidFlights));
+        var invalidFlights = flightBuilder.createInvalidFlightsBeforeAllFilters();
+        var allFlights = flightBuilder.createAllFlights(List.of(normalFlights, invalidFlights));
 
         var now = LocalDateTime.now();
         System.out.println("1: List without flights with departing in the past:");
