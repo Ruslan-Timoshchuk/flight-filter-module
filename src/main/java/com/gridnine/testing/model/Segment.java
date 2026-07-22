@@ -32,5 +32,22 @@ public class Segment {
         return '[' + departureDate.format(fmt) + '|' + arrivalDate.format(fmt)
             + ']';
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(arrivalDate, departureDate);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Segment other = (Segment) obj;
+        return Objects.equals(arrivalDate, other.arrivalDate) && Objects.equals(departureDate, other.departureDate);
+    }
     
 }
